@@ -28,7 +28,10 @@ st.set_page_config(layout="centered", page_icon="🎓", page_title="Hitorigoto")
 
 def next_word():
     st.session_state["answering"]=True
-    st.session_state["current_word_index"]+=1
+    if st.session_state["current_word_index"]==len(words)-1:
+        st.session_state["current_word_index"] = 0
+    else:
+        st.session_state["current_word_index"]+=1
 
 
 
