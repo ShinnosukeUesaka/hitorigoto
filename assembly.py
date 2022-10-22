@@ -1,12 +1,14 @@
 import argparse
 import os
 import utils
+import streamlit as st
 
 
 def transcribe(audio_file):
 
 
-    api_key = os.getenv("AAI_API_KEY")
+    #api_key = os.getenv("AAI_API_KEY")
+    api_key = st.secrets['AAI_API_KEY']
 
     # Create header with authorization along with content-type
     header = {
