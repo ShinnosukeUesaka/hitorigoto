@@ -15,7 +15,7 @@ openai.api_key = st.secrets['OPENAI_API_KEY']
 #openai.api_key = os.getenv("OPENAI_API_KEY")
 
 
-words=['Soccer', 'Badminton', 'University']
+words=['Soccer', 'Badminton', 'University', 'Carleton College', 'Money', 'South Korea']
 
 
 parent_dir = os.path.dirname(os.path.abspath(__file__))
@@ -53,9 +53,9 @@ if "native" not in st.session_state:
 
 
 st.sidebar.title(words[st.session_state["current_word_index"]])
-st.sidebar.button('次の単語', on_click=next_word)
+st.sidebar.button('Next word', on_click=next_word)
 
-st.title("独り言エクササイズ")
+st.title("Talk to myself")
 
 val = st_audiorec()
 
@@ -63,33 +63,33 @@ answer = st.empty()
 if st.session_state["answering"]:
     answer.info('AIの回答：')
 elif st.session_state["answer"] == words[st.session_state["current_word_index"]]:
-    answer.success('AIの回答：'+st.session_state["answer"])
+    answer.success("AI's Guess："+st.session_state["answer"])
 else:
-    answer.error('AIの回答：'+st.session_state["answer"])
+    answer.error("AI's Guess："+st.session_state["answer"])
 
 
 col1, col2, col3 = st.columns(3)
 
 with col1:
    transcript=st.empty()
-   with transcript.expander("あなたの英語", not st.session_state["answering"]):
+   with transcript.expander("Transcription", not st.session_state["answering"]):
         st.write(st.session_state["transcript"])
 
 with col2:
    correction=st.empty()
-   with correction.expander("添削", not st.session_state["answering"]):
+   with correction.expander("Grammar Correction", not st.session_state["answering"]):
         st.write(st.session_state["correction"])
 
 with col3:
    native=st.empty()
-   with native.expander("お手本", not st.session_state["answering"]):
+   with native.expander("Expression Correction", not st.session_state["answering"]):
         st.write(st.session_state["native"])
 
 if isinstance(val, dict) and  val != st.session_state['audio_data'] and st.session_state["answering"]==True:  # retrieve audio data
     st.session_state["answering"] = False
     st.session_state['audio_data']=val
 
-    with st.spinner('ロード中。。'):
+    with st.spinner('Loading。。'):
         ind, vall = zip(*val['arr'].items())
         ind = np.array(ind, dtype=int)  # convert to np array
         vall = np.array(vall)             # convert to np array
@@ -102,14 +102,14 @@ if isinstance(val, dict) and  val != st.session_state['audio_data'] and st.sessi
         with open('myfile.wav', mode='bx') as f:
             f.write(wav_bytes)
 
-        # model = whisper.load_model("tiny")
+        # model = whisper.load_model("tiny.en")
         # result = model.transcribe("myfile.wav")['text']
         result = assembly.transcribe("myfile.wav")
         print(result)
         os.remove("myfile.wav")
 
         st.session_state['transcript']=result
-        with transcript.expander("あなたの英語", True):
+        with transcript.expander("Your English", True):
             st.write(st.session_state['transcript'])
 
     response = openai.Completion.create(
@@ -125,9 +125,9 @@ if isinstance(val, dict) and  val != st.session_state['audio_data'] and st.sessi
     st.session_state['answer'] = response['choices'][0]['text'].strip()
     if st.session_state["answer"] == words[st.session_state["current_word_index"]]:
         st.balloons()
-        answer.success('AIの回答：'+st.session_state["answer"])
+        answer.success("AI's Guess："+st.session_state["answer"])
     else:
-        answer.error('AIの回答：'+st.session_state["answer"])
+        answer.error("AI's' Guess：+st.session_state["answer"])
 
     response = openai.Completion.create(
       model="text-davinci-002",
@@ -139,7 +139,7 @@ if isinstance(val, dict) and  val != st.session_state['audio_data'] and st.sessi
       presence_penalty=0
     )
     st.session_state['correction'] = response['choices'][0]['text']
-    with correction.expander("添削", True):
+    with correction.expander("Grammar Correction", True):
          st.write(st.session_state['correction'])
 
     response = openai.Completion.create(
@@ -152,5 +152,5 @@ if isinstance(val, dict) and  val != st.session_state['audio_data'] and st.sessi
       presence_penalty=0.3
     )
     st.session_state['native'] = response['choices'][0]['text']
-    with native.expander("お手本", True):
+    with native.expander("Expression Correction", True):
          st.write(st.session_state['native'])
