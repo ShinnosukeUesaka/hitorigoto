@@ -127,7 +127,7 @@ if isinstance(val, dict) and  val != st.session_state['audio_data'] and st.sessi
         st.balloons()
         answer.success("AI's Guess："+st.session_state["answer"])
     else:
-        answer.error("AI's' Guess：+st.session_state["answer"])
+        answer.error("AI's' Guess："+st.session_state["answer"])
 
     response = openai.Completion.create(
       model="text-davinci-002",
