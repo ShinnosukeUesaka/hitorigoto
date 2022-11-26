@@ -61,7 +61,7 @@ val = st_audiorec()
 
 answer = st.empty()
 if st.session_state["answering"]:
-    answer.info('AIの回答：')
+    answer.info("AI's Guess：")
 elif st.session_state["answer"] == words[st.session_state["current_word_index"]]:
     answer.success("AI's Guess："+st.session_state["answer"])
 else:
